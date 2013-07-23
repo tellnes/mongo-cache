@@ -23,7 +23,7 @@ function MongoCache(options) {
 inherits(MongoCache, AsyncCache)
 
 MongoCache.prototype._load = function (id, cb) {
-  debug({ id: id }, 'load from mongodb')
+  debug('load %s from mongodb', id)
 
   this._ids.push(id)
   this._cbs[id] = cb
@@ -32,10 +32,12 @@ MongoCache.prototype._load = function (id, cb) {
 
   var self = this
   process.nextTick(function () {
+    debug('next tick')
+
     var cbs = self._cbs
       , sel = { '_id': { $in: self._ids } }
 
-    self._ids.length
+    self._ids = []
     self._cbs = {}
 
     self.collection.find(sel, { fields: self.fields }).each(function (err, doc) {
